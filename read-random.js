@@ -23,13 +23,12 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-var fs = require('fs')
+import { fs } from '../fs/fs.js'
 
 var DEFAULT_DEVICE = '/dev/urandom'
 
-module.exports = function readRandom (
-  options, // Number > 0 OR {bytes: Number > 0[, device: String]}
-  callback // function (error, buffer)
+export function readRandomStream (
+  options // Number > 0 OR {bytes: Number > 0[, device: String]}
 ) {
   // Argument Parsing
   var bytesToRead
@@ -47,42 +46,49 @@ module.exports = function readRandom (
   if (bytesToRead < 1) {
     throw new Error('invalid byte count: ' + bytesToRead)
   }
-  // Open the device.
-  fs.open(device, 'r', function (openError, fileDescriptor) {
-    if (openError) {
-      callback(openError)
-    } else {
-      // Read from the device.
-      fs.read(
-        fileDescriptor, Buffer.alloc(bytesToRead), 0, bytesToRead, 0,
-        function (readError, bytesRead, buffer) {
-          // Succeed or fail, close the file descriptor.
-          if (readError) {
-            fs.close(fileDescriptor, function (closeError) {
-              // Call back with the read error, even if we receive a
-              // close error.
-              callback(readError)
-            })
-          // /dev/random and similar may fail by returning fewer bytes
-          // than requested.
-          } else if (bytesRead !== bytesToRead) {
-            fs.close(fileDescriptor, function (closeError) {
-              var bytesError = new Error('could not read enough bytes')
-              bytesError.requested = bytesToRead
-              bytesError.read = bytesRead
-              callback(bytesError)
-            })
-          } else {
-            fs.close(fileDescriptor, function (closeError) {
-              if (closeError) {
-                callback(closeError)
-              } else {
-                callback(null, buffer)
-              }
-            })
-          }
-        }
-      )
-    }
+  // Open the device and return stream
+  return fs.createReadStream(device, {
+    flags: 'r',
+    end: bytesToRead - 1 // starts at 0
   })
+}
+
+export async function readRandom (
+  options // Number > 0 OR {bytes: Number > 0[, device: String]}
+) {
+  // Argument Parsing
+  return new Promise((resolve, reject) => {
+    var buff = Buffer.alloc(0)
+    try {
+      var stream = readRandomStream(options)
+    } catch (e) {
+      reject(e)
+    }
+    stream.on('error', reject)
+    stream.on('data', d => {     
+      buff = Buffer.concat([buff, Buffer.from(d)])
+    })
+    stream.on('close', e => {
+      if (e) reject(e)
+      else resolve(buff)
+    })
+  })
+}
+
+export function entropyAvailStream (entropyFile = '/proc/sys/kernel/random/entropy_avail') {
+  return fs.createReadStream(entropyFile, {
+    flags: 'r',
+    encoding: 'utf-8'
+  })
+}
+
+export async function entropyAvail (entropyFile = '/proc/sys/kernel/random/entropy_avail') {
+  return parseInt(await fs.promises.readFile(entropyFile, 'utf-8'))
+}
+
+export default {
+  readRandom: readRandom,
+  readRandomStream: readRandomStream,
+  entropyAvailStream: entropyAvailStream,
+  entropyAvail: entropyAvail
 }

@@ -1,9 +1,12 @@
 {
-  "name": "read-random",
+  "name": "@guld/read-random",
   "version": "1.0.0",
   "description": "read from /dev/urandom or another random number source device",
   "author": "Kyle E. Mitchell <kyle@kemitchell.com> (https://kemitchell.com/)",
-  "repository": "kemitchell/read-random.js",
+  "repository": "https://iramiller.com/src/js/read-random/.git",
+  "homepage": "https://iramiller.com/src/js/read-random/",
+  "main": "read-random.node.js",
+  "module": "read-random.js",
   "os": [
     "darwin",
     "linux"
