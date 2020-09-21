@@ -1,10 +1,10 @@
 {
-  "name": "@guld/read-random",
+  "name": "iso-read-random",
   "version": "1.0.0",
   "description": "read from /dev/urandom or another random number source device",
   "author": "Kyle E. Mitchell <kyle@kemitchell.com> (https://kemitchell.com/)",
-  "repository": "https://iramiller.com/src/js/read-random/.git",
-  "homepage": "https://iramiller.com/src/js/read-random/",
+  "repository": "https://github.com/isysd-mirror/iso-read-random.git",
+  "homepage": "https://github.com/isysd-mirror/iso-read-random/",
   "main": "read-random.node.js",
   "module": "read-random.js",
   "os": [
@@ -12,14 +12,23 @@
     "linux"
   ],
   "files": [
-    "index.js"
+    "read-random.js",
+    "read-random.node.js"
+
   ],
   "license": "MIT",
+  "dependencies": {
+    "iso-fs": "../iso-fs"
+  },
   "devDependencies": {
     "defence-cli": "^2.0.1",
     "replace-require-self": "^1.1.1",
     "standard": "^10.0.2",
-    "standard-markdown": "^4.0.1"
+    "standard-markdown": "^4.0.1",
+    "iso-assert": "../iso-assert",
+    "iso-test": "../iso-test",
+    "always-global": "../always-global",
+    "iso-process": "../iso-process"
   },
   "scripts": {
     "test": "defence -i javascript README.md | replace-require-self | node",

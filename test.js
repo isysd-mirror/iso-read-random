@@ -1,7 +1,8 @@
-import assert from '../assert/assert.js'
-import { fs } from '../fs/fs.js'
-import global from '../global/global.js'
-import { Process } from '../process/process.js'
+import assert from '../iso-assert/assert.js'
+import { fs } from '../iso-fs/fs.js'
+import global from '../always-global/global.js'
+import { Process } from '../iso-process/process.js'
+import { Buffer } from '../iso-buffer/buffer.js'
 import { readRandom, readRandomStream, entropyAvail } from './read-random.js'
 import { finishTest } from '../iso-test/index.js'
 global.process = Process.getProcess()

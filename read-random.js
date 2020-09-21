@@ -23,7 +23,7 @@ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-import { fs } from '../fs/fs.js'
+import { fs } from '../iso-fs/fs.js'
 
 var DEFAULT_DEVICE = '/dev/urandom'
 
